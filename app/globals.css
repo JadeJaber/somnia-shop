@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-night-950 text-slate-100;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-moon px-6 py-3 font-semibold text-night-950 transition hover:brightness-95 active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full border border-slate-600 px-6 py-3 font-semibold text-slate-100 transition hover:border-moon hover:text-moon;
+}
+
+.card {
+  @apply rounded-2xl border border-slate-800 bg-night-900 p-5 shadow-lg shadow-black/20;
+}
