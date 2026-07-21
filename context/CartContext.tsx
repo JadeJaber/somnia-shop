@@ -22,6 +22,7 @@ type CartContextValue = {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
+  hydrated: boolean;
 };
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -104,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         isOpen,
         openCart: () => setIsOpen(true),
         closeCart: () => setIsOpen(false),
+        hydrated,
       }}
     >
       {children}

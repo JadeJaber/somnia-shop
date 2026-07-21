@@ -5,12 +5,12 @@ import { useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 
 export default function CheckoutSuccessPage() {
-  const { clearCart } = useCart();
+  const { clearCart, hydrated } = useCart();
 
   useEffect(() => {
-    clearCart();
+    if (hydrated) clearCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hydrated]);
 
   return (
     <div className="mx-auto max-w-xl px-6 py-24 text-center">

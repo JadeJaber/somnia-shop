@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Le panier est vide." }, { status: 400 });
     }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
     // Sécurité : on ne fait jamais confiance au prix envoyé par le client.
     // On revalide chaque article contre le catalogue serveur.
     const line_items = items.map((item) => {
@@ -18,6 +20,11 @@ export async function POST(req: NextRequest) {
       if (!product) {
         throw new Error(`Produit inconnu : ${item.slug}`);
       }
+      // Stripe exige une URL absolue : les images du catalogue sont des
+      // chemins locaux (/products/...), on les préfixe avec l'URL du site.
+      const imageUrl = product.images[0].startsWith("http")
+        ? product.images[0]
+        : `${siteUrl}${product.images[0]}`;
       return {
         quantity: item.quantity,
         price_data: {
@@ -25,13 +32,12 @@ export async function POST(req: NextRequest) {
           unit_amount: Math.round(product.price * 100),
           product_data: {
             name: product.name,
-            images: [product.images[0]],
+            images: [imageUrl],
+            metadata: { slug: product.slug },
           },
         },
       };
     });
-
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const randomSuffix = Array.from({ length: 8 }, () =>
       "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)]
     ).join("");
@@ -40,6 +46,7 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       integration_identifier: `somnia-checkout-${randomSuffix}`,
       line_items,
+      phone_number_collection: { enabled: true },
       shipping_address_collection: {
         allowed_countries: ["FR", "BE", "CH", "LU", "DE", "ES", "IT", "GB", "US", "CA"],
       },
